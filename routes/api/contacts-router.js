@@ -6,6 +6,7 @@ import {
 	contactUpdateFavoriteSchema,
 } from "../../models/contact.js";
 import isValidId from "../../middlewares/isValidId.js";
+import isEmptyBody from "../../middlewares/isEmptyBody.js";
 
 const contactAddValidate = validateBody(contactAddSchema);
 const contactUpdateFavoriteValidate = validateBody(contactUpdateFavoriteSchema);
@@ -16,16 +17,23 @@ contactsRouter.get("/", contactsController.getAll);
 
 contactsRouter.get("/:id", isValidId, contactsController.getById);
 
-contactsRouter.post("/", contactAddValidate, contactsController.add);
+contactsRouter.post(
+	"/",
+	isEmptyBody,
+	contactAddValidate,
+	contactsController.add
+);
 
 contactsRouter.put(
 	"/:id",
+	isEmptyBody,
 	isValidId,
 	contactAddValidate,
 	contactsController.updateById
 );
 contactsRouter.patch(
 	"/:id/favorite",
+	isEmptyBody,
 	isValidId,
 	contactUpdateFavoriteValidate,
 	contactsController.updateById

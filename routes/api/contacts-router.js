@@ -4,7 +4,7 @@ import validateBody from "../../decorators/validateBody.js";
 import {
 	contactAddSchema,
 	contactUpdateFavoriteSchema,
-} from "../../models/contact.js";
+} from "../../models/Contact.js";
 import isValidId from "../../middlewares/isValidId.js";
 import isEmptyBody from "../../middlewares/isEmptyBody.js";
 

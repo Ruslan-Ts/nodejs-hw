@@ -4,14 +4,17 @@ import validateBody from "../../decorators/validateBody.js";
 import {
 	contactAddSchema,
 	contactUpdateFavoriteSchema,
-} from "../../models/contact.js";
+} from "../../models/Contact.js";
 import isValidId from "../../middlewares/isValidId.js";
 import isEmptyBody from "../../middlewares/isEmptyBody.js";
+import authenticate from "../../middlewares/authenticate.js";
 
 const contactAddValidate = validateBody(contactAddSchema);
 const contactUpdateFavoriteValidate = validateBody(contactUpdateFavoriteSchema);
 
 const contactsRouter = express.Router();
+
+contactsRouter.use(authenticate);
 
 contactsRouter.get("/", contactsController.getAll);
 

@@ -30,10 +30,7 @@ const getById = async (req, res) => {
 
 const add = async (req, res) => {
 	const { _id: owner } = req.user;
-	const result = await Contact.create({ ...req.body, owner }).populate(
-		"owner",
-		"email subscription"
-	);
+	const result = await Contact.create({ ...req.body, owner });
 	res.status(201).json(result);
 };
 
@@ -53,10 +50,7 @@ const updateById = async (req, res) => {
 const removeById = async (req, res) => {
 	const { id } = req.params;
 	const { _id: owner } = req.user;
-	const result = await Contact.findOneAndDelete({ _id: id }).populate(
-		"owner",
-		"email subscription"
-	);
+	const result = await Contact.findOneAndDelete({ _id: id });
 	if (!result) {
 		throw HttpError(404, `Contact with ${id} not found`);
 	}

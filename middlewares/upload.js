@@ -16,12 +16,12 @@ const limits = {
 	fileSize: 3 * 1024 * 1024,
 };
 
-const fileFilter = (req, res, cb) => {
-	if (file.originalname.split(".").pop() === "exe") {
-		cb(new Error("Invalid extention"));
-	}
-	cb(null, true);
-};
+// const fileFilter = (req, res, cb) => {
+// 	if (file.originalname.split(".").pop() === "exe") {
+// 		cb(new Error("Invalid extention"));
+// 	}
+// 	cb(null, true);
+// };
 
 const upload = multer({
 	storage,

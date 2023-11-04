@@ -52,5 +52,9 @@ export const userLoginSchema = Joi.object({
 	password: Joi.string().min(6).required(),
 });
 
+export const userEmailSchema = Joi.object({
+	email: Joi.string().email({ minDomainSegments: 2 }).required(),
+});
+
 const User = model("user", userSchema);
 export default User;

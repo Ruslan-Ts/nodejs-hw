@@ -2,13 +2,15 @@ import fs from "fs/promises";
 import path from "path";
 import User from "../models/User.js";
 import HttpError from "../helpers/HttpErrors.js";
+import sendEmail from "../helpers/sendEmail.js";
 import ctrlWrapper from "../decorators/ctrlWrapper.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Jimp from "jimp";
 import gravatar from "gravatar";
+import { nanoid } from "nanoid";
 
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET, BASE_URL, PORT } = process.env;
 
 const avatarPath = path.resolve("public", "avatars");
 
@@ -20,15 +22,40 @@ const register = async (req, res) => {
 	}
 	const avatarURL = gravatar.url(email);
 	const hashPassword = await bcrypt.hash(password, 10);
+	const verificationToken = nanoid();
+
 	const newUser = await User.create({
 		...req.body,
 		password: hashPassword,
 		avatarURL,
+		verificationToken,
 	});
+
+	const verifyEmail = {
+		to: email,
+		subject: "Verify email",
+		html: `<a target="_blank" href="${BASE_URL}:${PORT}/api/users/verify/${verificationToken}">Click to verify email</a>`,
+	};
+
+	await sendEmail(verifyEmail);
+
 	res.status(201).json({
 		email: newUser.email,
 		subscription: newUser.subscription,
 	});
+};
+
+const verify = async (req, res) => {
+	const { verificationToken } = req.params;
+	const user = await User.findOne({ verificationToken });
+	if (!user) {
+		throw HttpError(404, "User not found");
+	}
+	await User.findByIdAndUpdate(user._id, {
+		verify: true,
+		verificationToken: "",
+	});
+	res.json({ message: "Verification successful!" });
 };
 
 const login = async (req, res) => {
@@ -36,6 +63,9 @@ const login = async (req, res) => {
 	const user = await User.findOne({ email });
 	if (!user) {
 		throw HttpError(401, "email or password invalid");
+	}
+	if (!user.verify) {
+		throw HttpError(401, "email is nov verify");
 	}
 	const passwordCompare = await bcrypt.compare(password, user.password);
 	if (!passwordCompare) {
@@ -88,6 +118,7 @@ const logout = async (req, res) => {
 
 export default {
 	register: ctrlWrapper(register),
+	verify: ctrlWrapper(verify),
 	login: ctrlWrapper(login),
 	getCurrent: ctrlWrapper(getCurrent),
 	changeAvatar: ctrlWrapper(changeAvatar),

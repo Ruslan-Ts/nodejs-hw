@@ -18,6 +18,8 @@ authRouter.post(
 	authController.register
 );
 
+authRouter.get("/verify/:verificationToken", authController.verify);
+
 authRouter.post("/login", isEmptyBody, userLoginValidate, authController.login);
 
 authRouter.get("/current", authenticate, authController.getCurrent);
